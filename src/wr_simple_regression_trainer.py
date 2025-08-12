@@ -9,7 +9,7 @@ import json
 print("Let's build a WR prediction regression model")
 
 # step 1: load and combine WR data
-seasons = [2020, 2021, 2022, 2023, 2024]
+seasons = range(2000, 2025)
 all_wr_data = []
 
 for season in seasons:
@@ -22,12 +22,17 @@ print(f"Combined data: {len(combined_wr_data)} total WR player-weeks")
 # step 2: determine season totals for each player-season
 seasonal_stats = combined_wr_data.groupby(["player_display_name", "season"]).agg({
     "fantasy_points_ppr": "sum",  # y vector
+
+    "receiving_yards": "sum",
+    "receiving_first_downs": "sum",
+    "receptions": "sum",
     "targets": "sum",
     "target_share": "mean",
-    "receiving_yards": "sum",
-    "receptions": "sum",
-    "receiving_tds": "sum",
-    "air_yards_share": "mean"  # 6 features for now
+    "receiving_yards_after_catch": "sum",
+    "wopr": "mean",
+    "receiving_air_yards": "sum"
+    # "receiving_tds": "sum",
+    # "air_yards_share": "mean"
 }).reset_index()
 
 print(f"{len(seasonal_stats)} player-seasons created")
@@ -49,13 +54,19 @@ for player in seasonal_stats["player_display_name"].unique():
         prediction_pair = {
             "player": player,
             "predict_season": next_szn["season"],
+
             # features (X): from current season
+            "prev_receiving_yards": current_szn["receiving_yards"],
+            "prev_receiving_first_downs": current_szn["receiving_first_downs"],
+            "prev_receptions": current_szn["receptions"],
             "prev_targets": current_szn["targets"],
             "prev_target_share": current_szn["target_share"],
-            "prev_receiving_yards": current_szn["receiving_yards"],
-            "prev_receptions": current_szn["receptions"],
-            "prev_receiving_tds": current_szn["receiving_tds"],
-            "prev_air_yards_share": current_szn["air_yards_share"],
+            "prev_receiving_yards_after_catch": current_szn["receiving_yards_after_catch"],
+            "prev_wopr": current_szn["wopr"],
+            "prev_receiving_air_yards": current_szn["receiving_air_yards"],
+            # "prev_receiving_tds": current_szn["receiving_tds"],
+            # "prev_air_yards_share": current_szn["air_yards_share"],
+
             # target (y): from next season
             "next_fantasy_points": next_szn["fantasy_points_ppr"]
         }
@@ -69,7 +80,16 @@ prediction_df_clean = prediction_df.dropna()
 print(prediction_df_clean.head(10))
 
 # step 4: create X matrix and y vector
-feature_columns = ["prev_targets", "prev_target_share", "prev_receiving_yards", "prev_receptions", "prev_receiving_tds", "prev_air_yards_share"]
+feature_columns = [
+    "prev_receiving_yards",
+    "prev_receiving_first_downs",
+    "prev_receptions",
+    "prev_targets",
+    "prev_target_share",
+    "prev_receiving_yards_after_catch",
+    "prev_wopr",
+    "prev_receiving_air_yards",
+]
 X = prediction_df_clean[feature_columns]
 y = prediction_df_clean["next_fantasy_points"]
 

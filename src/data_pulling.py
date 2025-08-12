@@ -3,7 +3,7 @@ import nfl_data_py as nfl
 
 print("SAVING DATA...")
 
-seasons = [2020, 2021, 2022, 2023, 2024]
+seasons = range(2000, 2025)
 positions = ["WR", "RB", "TE", "QB"]
 
 for season in seasons:

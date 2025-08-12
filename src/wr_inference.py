@@ -20,18 +20,21 @@ data = pd.read_csv(f"data/raw/{POSITION}_2024_weekly.csv")
 
 # step 3: create 2024 season totals (input features)
 last_szn_totals = data.groupby("player_display_name").agg({
+    "receiving_yards": "sum",
+    "receiving_first_downs": "sum",
+    "receptions": "sum",
     "targets": "sum",
     "target_share": "mean",
-    "receiving_yards": "sum",
-    "receptions": "sum",
-    "receiving_tds": "sum",
-    "air_yards_share": "mean",
+    "receiving_yards_after_catch": "sum",
+    "wopr": "mean",
+    "receiving_air_yards": "sum"
+    # "receiving_tds": "sum",
+    # "air_yards_share": "mean"
 }).reset_index()
 
 print(f"{len(last_szn_totals)} players available for prediction")
 
 # step 4: determine players for prediction
-# players = ["CeeDee Lamb", "Ja\'Marr Chase", "Justin Jefferson"]
 input_players = pd.read_csv("data/inference_input/input_players.csv", skiprows=4)
 players = []
 for ix, row in input_players.iterrows():
@@ -64,12 +67,16 @@ for player in players:
         continue
 
     features = [[
+        player_2024["receiving_yards"].iloc[0],
+        player_2024["receiving_first_downs"].iloc[0],
+        player_2024["receptions"].iloc[0],
         player_2024["targets"].iloc[0],
         player_2024["target_share"].iloc[0],
-        player_2024["receiving_yards"].iloc[0],
-        player_2024["receptions"].iloc[0],
-        player_2024["receiving_tds"].iloc[0],
-        player_2024["air_yards_share"].iloc[0]
+        player_2024["receiving_yards_after_catch"].iloc[0],
+        player_2024["wopr"].iloc[0],
+        player_2024["receiving_air_yards"].iloc[0],
+        # player_2024["receiving_tds"].iloc[0],
+        # player_2024["air_yards_share"].iloc[0]
     ]]
 
     predicted_2025 = model.predict(features)[0]

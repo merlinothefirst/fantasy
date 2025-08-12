@@ -1,15 +1,17 @@
 {
   "feature_columns": [
+    "prev_receiving_yards",
+    "prev_receiving_first_downs",
+    "prev_receptions",
     "prev_targets",
     "prev_target_share",
-    "prev_receiving_yards",
-    "prev_receptions",
-    "prev_receiving_tds",
-    "prev_air_yards_share"
+    "prev_receiving_yards_after_catch",
+    "prev_wopr",
+    "prev_receiving_air_yards"
   ],
   "model_metrics": {
-    "r2_score": 0.5169817128455191,
-    "rmse": 62.29707940989387,
-    "n_train_samples": 512
+    "r2_score": 0.5211047568949165,
+    "rmse": 65.95199709114699,
+    "n_train_samples": 2083
   }
 }
