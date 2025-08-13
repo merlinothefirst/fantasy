@@ -21,7 +21,6 @@ model = joblib.load(f"models/{MODEL}_wr_model_weights.pkl")
 # feature_columns = model_info["feature_columns"]
 with open("data/quarter_decade/WR_metrics.json", "r") as f:
     desired_metrics = json.load(f)
-desired_metrics.append("fantasy_points_ppr")
 feature_columns = desired_metrics
 
 # load data

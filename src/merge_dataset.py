@@ -17,10 +17,6 @@ ngs_data = ngs_data.rename(columns={"player_gsis_id": "player_id"})
 
 # merge the datasets
 comprehensive_data = seasonal_data.merge(
-    ngs_data,
-    on=["player_id", "season"],
-    how="inner"
-).merge(
     roster_data,
     on=["player_id", "season"],
     how="inner"
@@ -33,8 +29,7 @@ with open("data/quarter_decade/WR_metrics.json", "r") as f:
 extra_columns = [
     "player_id",
     "player_name",
-    "season",
-    "fantasy_points_ppr"
+    "season"
 ]
 
 columns_to_keep = desired_features + extra_columns

@@ -71,24 +71,17 @@ print()
 # next we need to convert this into the appropriate X matrix and y vector for learning
 with open("data/quarter_decade/WR_metrics.json", "r") as f:
     desired_metrics = json.load(f)
-desired_metrics.append("fantasy_points_ppr")
 
 X = prediction_pairs_df[desired_metrics]
 y = prediction_pairs_df["target"]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+# correlation
 correlation_matrix = X_train.corr()
 high_corr = correlation_matrix[correlation_matrix.abs() > 0.8]
 print("Highly correlated features:")
 print(high_corr)
-
-print("NaN values in dataset:")
-print(f"X_train NaN count: {X_train.isnull().sum().sum()}")
-print(f"X_test NaN count: {X_test.isnull().sum().sum()}")
-print(f"y_train NaN count: {y_train.isnull().sum()}")
-print(f"y_test NaN count: {y_test.isnull().sum()}")
-print()
 
 # define a variety of models for testing
 models = {
