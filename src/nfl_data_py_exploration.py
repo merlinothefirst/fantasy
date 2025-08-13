@@ -10,43 +10,64 @@ import nfl_data_py as nfl
 # print(weekly_columns)
 # print()
 
+fns = [fn for fn in dir(nfl) if not fn.startswith("_")]
+print(fns)
+
+# player_data = nfl.import_players()
+# methods = [method for method in dir(player_data) if not method.startswith("_")]
+# print()
+# print(methods)
+# print()
+# print(player_data.head())
+# player_data.info()
+
+season_data = nfl.import_ngs_data("receiving", [2024])
+# methods = [method for method in dir(season_data) if not method.startswith("_")]
+
+print(season_data.head())
+season_data.info()
+
 # weekly_data = nfl.import_weekly_data([2024])
 # print("Available methods on weekly_data DataFrame:")
 # methods = [method for method in dir(weekly_data) if not method.startswith('_')]
 # for method in methods:
 #     print(method)
 
-weekly_data = nfl.import_weekly_data([2024])
-pbp_data = nfl.import_pbp_data([2024])
+# spec_data = weekly_data[weekly_data["player_display_name"] == "Tyreek Hill"]
+# print(spec_data["rushing_yards"])
 
-# Calculate pass rate by team/season
-team_pass_rates = pbp_data.groupby(['season', 'posteam']).agg({
-    'pass': 'mean'  # This gives us pass rate
-}).reset_index()
+# weekly_data = nfl.import_weekly_data([2024])
+# pbp_data = nfl.import_pbp_data([2024])
 
-# Filter for WRs only before calculating defense stats
-wr_data = weekly_data[weekly_data['position'] == 'WR']
 
-# For opponent WR points allowed - use WR data only
-defense_vs_wr = wr_data.groupby(['season', 'opponent_team', 'week']).agg({
-    'fantasy_points_ppr': 'sum'  # Total points per game
-}).reset_index().groupby(['season', 'opponent_team']).agg({
-    'fantasy_points_ppr': 'mean'  # Average total points per game
-}).reset_index()
+# # Calculate pass rate by team/season
+# team_pass_rates = pbp_data.groupby(['season', 'posteam']).agg({
+#     'pass': 'mean'  # This gives us pass rate
+# }).reset_index()
 
-# Let's see what we got
-# Most pass-heavy teams
-print("Most pass-heavy teams:")
-print(team_pass_rates.sort_values('pass', ascending=False).head(5))
+# # Filter for WRs only before calculating defense stats
+# wr_data = weekly_data[weekly_data['position'] == 'WR']
 
-# Most run-heavy teams  
-print("\nMost run-heavy teams:")
-print(team_pass_rates.sort_values('pass', ascending=True).head(5))
+# # For opponent WR points allowed - use WR data only
+# defense_vs_wr = wr_data.groupby(['season', 'opponent_team', 'week']).agg({
+#     'fantasy_points_ppr': 'sum'  # Total points per game
+# }).reset_index().groupby(['season', 'opponent_team']).agg({
+#     'fantasy_points_ppr': 'mean'  # Average total points per game
+# }).reset_index()
 
-# Worst defenses vs WRs (allow most points)
-print("\nWorst defenses vs WRs:")
-print(defense_vs_wr.sort_values('fantasy_points_ppr', ascending=False).head(5))
+# # Let's see what we got
+# # Most pass-heavy teams
+# print("Most pass-heavy teams:")
+# print(team_pass_rates.sort_values('pass', ascending=False).head(5))
 
-# Best defenses vs WRs (allow fewest points)
-print("\nBest defenses vs WRs:")
-print(defense_vs_wr.sort_values('fantasy_points_ppr', ascending=True).head(5))
+# # Most run-heavy teams
+# print("\nMost run-heavy teams:")
+# print(team_pass_rates.sort_values('pass', ascending=True).head(5))
+
+# # Worst defenses vs WRs (allow most points)
+# print("\nWorst defenses vs WRs:")
+# print(defense_vs_wr.sort_values('fantasy_points_ppr', ascending=False).head(5))
+
+# # Best defenses vs WRs (allow fewest points)
+# print("\nBest defenses vs WRs:")
+# print(defense_vs_wr.sort_values('fantasy_points_ppr', ascending=True).head(5))

@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 import joblib
 import json
+from xgboost import XGBRegressor
 
 print("Let's build a WR prediction regression model")
 
@@ -105,6 +106,7 @@ print(f"Test size: {X_test.shape[0]}")
 print("Training via Linear Regression...")
 print()
 model = LinearRegression()
+# model = XGBRegressor()
 model.fit(X_train, y_train)
 
 # step 7: test the model
