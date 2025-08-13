@@ -1,0 +1,17 @@
+{
+  "feature_columns": [
+    "receptions_x",
+    "targets_x",
+    "receiving_yards",
+    "receiving_tds",
+    "receiving_yards_after_catch",
+    "receiving_first_downs",
+    "fantasy_points_ppr"
+  ],
+  "model_performance": {
+    "R2": 0.2285083672354684,
+    "RMSE": 66.17930931389016
+  },
+  "training_samples": 679,
+  "nan_handling": "fill_nan_with_median"
+}

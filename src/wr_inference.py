@@ -2,93 +2,62 @@ import pandas as pd
 import joblib
 import warnings
 from sklearn.exceptions import DataConversionWarning
+import json
 
 
-MODEL_PATH = "models/wr_model_weights.pkl"
+MODEL = "linear_regression"
 POSITION = "WR"
 TOP_N = 50
 
 warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
 
 
-# step 1: load model
+# load model and features
 print("Loading trained model...")
-model = joblib.load(MODEL_PATH)
+model = joblib.load(f"models/{MODEL}_wr_model_weights.pkl")
 
-# step 2: load data
-data = pd.read_csv(f"data/raw/{POSITION}_2024_weekly.csv")
+# with open(f"models/{MODEL}_wr_model_stats.json", "r") as f:
+#     model_info = json.load(f)
+# feature_columns = model_info["feature_columns"]
+with open("data/quarter_decade/WR_metrics.json", "r") as f:
+    desired_metrics = json.load(f)
+desired_metrics.append("fantasy_points_ppr")
+feature_columns = desired_metrics
 
-# step 3: create 2024 season totals (input features)
-last_szn_totals = data.groupby("player_display_name").agg({
-    "receiving_yards": "sum",
-    "receiving_first_downs": "sum",
-    "receptions": "sum",
-    "targets": "sum",
-    "target_share": "mean",
-    "receiving_yards_after_catch": "sum",
-    "wopr": "mean",
-    "receiving_air_yards": "sum"
-    # "receiving_tds": "sum",
-    # "air_yards_share": "mean"
-}).reset_index()
+# load data
+data = pd.read_csv("data/filtered/comprehensive_WR_data.csv")
 
-print(f"{len(last_szn_totals)} players available for prediction")
+# create 2024 season totals (input features)
+last_season_totals = data[data["season"] == 2024].copy()
+last_season_totals = last_season_totals.drop_duplicates(subset="player_name", keep="first")
+print(f"Found {len(last_season_totals)} WRs with 2024 data")
 
-# step 4: determine players for prediction
-input_players = pd.read_csv("data/inference_input/input_players.csv", skiprows=4)
-players = []
-for ix, row in input_players.iterrows():
-    if ix > TOP_N:
-        break
+# prepare features for prediction
+prediction_feautures = last_season_totals[feature_columns].fillna(last_season_totals[feature_columns].median())
 
-    player = row["Player"]
+# make predictions for 2025
+predictions_2025 = model.predict(prediction_feautures)
 
-    # inputs don't have Jr.'s:
-    if player.endswith("Jr."):
-        player = player[:-4]
+# organize results
+results = pd.DataFrame({
+    "player_id": last_season_totals["player_id"],
+    "player_name": last_season_totals["player_name"],
+    "predicted_2025_points": predictions_2025
+})
 
-    # DJ Moore:
-    if "DJ" in player:
-        player = player.replace("DJ", "D.J.")
+# sort and display top N predictions
+top_predictions = results.sort_values("predicted_2025_points", ascending=False).head(TOP_N)
 
-    if row["Pos"] == POSITION:
-        players.append(player)
-
-print(f"Players to predict: {players}")
 print()
-
-# step 5: run prediction
-predictions_2025 = []
-for player in players:
-    player_2024 = last_szn_totals[last_szn_totals["player_display_name"] == player]
-
-    if player_2024.empty:
-        print(f"Couldn't find {player}")
-        continue
-
-    features = [[
-        player_2024["receiving_yards"].iloc[0],
-        player_2024["receiving_first_downs"].iloc[0],
-        player_2024["receptions"].iloc[0],
-        player_2024["targets"].iloc[0],
-        player_2024["target_share"].iloc[0],
-        player_2024["receiving_yards_after_catch"].iloc[0],
-        player_2024["wopr"].iloc[0],
-        player_2024["receiving_air_yards"].iloc[0],
-        # player_2024["receiving_tds"].iloc[0],
-        # player_2024["air_yards_share"].iloc[0]
-    ]]
-
-    predicted_2025 = model.predict(features)[0]
-
-    predictions_2025.append({
-        "player": player,
-        "predicted_2025": predicted_2025
-    })
-
-# step 6: return results
-predictions_2025.sort(key=lambda x: x["predicted_2025"], reverse=True)
 print("WR rank:  Player:             Predicted PPR points:")
 print("-----------------------------------------")
-for ix, prediction in enumerate(predictions_2025):
-    print(f"{str(ix+1):10}{prediction['player']:35}{prediction['predicted_2025']:.2f}")
+for ix, row in top_predictions.iterrows():
+    print(f"{str(ix+1):10}{row['player_name']:35}{row['predicted_2025_points']:.2f}")
+
+print()
+print("Checking feature alignment...")
+print(f"Training features: {len(feature_columns)}")
+print(f"Available in 2024 data: {sum([col in last_season_totals.columns for col in feature_columns])}")
+missing = [col for col in feature_columns if col not in last_season_totals.columns]
+if missing:
+    print(f"Missing features: {missing}")

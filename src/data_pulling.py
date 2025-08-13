@@ -1,4 +1,5 @@
 import nfl_data_py as nfl
+import json
 
 
 print("SAVING DATA...")
@@ -35,7 +36,6 @@ for position in positions:
     pos_roster_data = roster_data[roster_data["position"] == position].copy()
     players_dict[position] = set(pos_roster_data["player_id"])
     print(f"Total {position}s: {len(players_dict[position])}")
-
 
 # seasonal data
 seasonal_data = nfl.import_seasonal_data(seasons)

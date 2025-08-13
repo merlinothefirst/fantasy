@@ -10,6 +10,7 @@ dependencies:
   - seaborn
   - scikit-learn
   - jupyter
+  - xgboost
   - pip
   - pip:
     - nfl_data_py
