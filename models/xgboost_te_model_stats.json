@@ -1,0 +1,29 @@
+{
+  "feature_columns": [
+    "receptions",
+    "targets",
+    "receiving_yards",
+    "receiving_air_yards",
+    "receiving_yards_after_catch",
+    "receiving_first_downs",
+    "target_share",
+    "air_yards_share",
+    "wopr_x",
+    "fantasy_points_ppr",
+    "tgt_sh",
+    "ay_sh",
+    "wopr_y",
+    "ry_sh",
+    "rfd_sh",
+    "rtdfd_sh",
+    "w8dom",
+    "yptmpa",
+    "ppr_sh"
+  ],
+  "model_performance": {
+    "R2": 0.1970636529683284,
+    "RMSE": 57.16144619683224
+  },
+  "training_samples": 582,
+  "nan_handling": "fill_nan_with_median"
+}

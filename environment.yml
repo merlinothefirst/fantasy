@@ -11,6 +11,8 @@ dependencies:
   - scikit-learn
   - jupyter
   - xgboost
+  - flask
+  - flask-cors
   - pip
   - pip:
     - nfl_data_py

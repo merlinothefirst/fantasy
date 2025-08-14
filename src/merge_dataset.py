@@ -2,19 +2,19 @@ import pandas as pd
 import json
 
 
-def merge_datasets(position, season_range: tuple=(2016, 2024)):
+def merge_datasets(position, season_range: tuple=(2016, 2024), for_app=False):
     # load datasets
     seasonal_data = pd.read_csv(f"data/quarter_decade/{position}_seasonal_data.csv")
-    ngs_data = pd.read_csv(f"data/quarter_decade/{position}_ngs_data.csv")
+    # ngs_data = pd.read_csv(f"data/quarter_decade/{position}_ngs_data.csv")
     roster_data = pd.read_csv(f"data/quarter_decade/{position}_roster_data.csv")
 
     print("Dataset sizes:")
     print(f"Seasonal: {seasonal_data.shape}")
-    print(f"NGS: {ngs_data.shape}")
+    # print(f"NGS: {ngs_data.shape}")
     print(f"Roster: {roster_data.shape}")
 
     # standardize player_gsis_id to player_id
-    ngs_data = ngs_data.rename(columns={"player_gsis_id": "player_id"})
+    # ngs_data = ngs_data.rename(columns={"player_gsis_id": "player_id"})
 
     # merge the datasets
     comprehensive_data = seasonal_data.merge(
@@ -30,8 +30,13 @@ def merge_datasets(position, season_range: tuple=(2016, 2024)):
     ]
 
     # filter to desired metrics/features
-    with open(f"data/metrics/{position}_metrics.json", "r") as f:
-        desired_features = json.load(f)
+    desired_features = None
+    if for_app:
+        with open(f"data/metrics/{position}_metrics_app.json", "r") as f:
+            desired_features = json.load(f)
+    else:
+        with open(f"data/metrics/{position}_metrics.json", "r") as f:
+            desired_features = json.load(f)
 
     extra_columns = [
         "player_id",

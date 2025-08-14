@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Football ML Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .control-panel {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-size: 1.1em;
+        }
+
+        select {
+            width: 200px;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .features-container {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .feature-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .feature-checkbox:hover {
+            background-color: #f1f5f9;
+        }
+
+        .feature-checkbox input[type="checkbox"] {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+
+        .feature-checkbox label {
+            margin: 0;
+            font-weight: 500;
+            cursor: pointer;
+            color: #4a5568;
+        }
+
+        .feature-controls {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e0;
+        }
+
+        .top-n-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .top-n-control input {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .run-button {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .run-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .run-button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .model-info {
+            background: #e6fffa;
+            border: 2px solid #81e6d9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .model-info h3 {
+            color: #234e52;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .model-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .predictions-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .predictions-table h3 {
+            background: #2d3748;
+            color: white;
+            padding: 20px;
+            margin: 0;
+            font-size: 1.3em;
+        }
+
+        .table-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 700;
+            color: #2d3748;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        .rank {
+            text-align: center;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .predicted-points {
+            text-align: right;
+            font-weight: 600;
+            color: #38a169;
+        }
+
+        .error {
+            background: #fed7d7;
+            border: 2px solid #fc8181;
+            color: #742a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .feature-count {
+            font-size: 0.9em;
+            color: #718096;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏈 Fantasy Football ML Predictor</h1>
+            <p>Train machine learning models to predict 2025 fantasy performance</p>
+        </div>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="form-group">
+                    <label for="position">Select Position:</label>
+                    <select id="position">
+                        <option value="">Choose a position...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Features:</label>
+                    <div class="feature-controls">
+                        <button class="btn btn-secondary" onclick="selectAllFeatures()">Select All</button>
+                        <button class="btn btn-secondary" onclick="deselectAllFeatures()">Deselect All</button>
+                    </div>
+                    <div class="features-container">
+                        <div id="features-list" class="features-grid">
+                            <!-- Features will be populated here -->
+                        </div>
+                    </div>
+                    <div class="feature-count" id="feature-count">Select a position to see available features</div>
+                </div>
+
+                <div class="top-n-control">
+                    <label for="top-n">Show top</label>
+                    <input type="number" id="top-n" value="20" min="5" max="50">
+                    <label for="top-n">players</label>
+                </div>
+
+                <button class="run-button" id="run-btn" onclick="runPrediction()" disabled>
+                    🚀 Train & Predict
+                </button>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Training models and generating predictions...</p>
+                <p style="font-size: 0.9em; color: #718096;">This may take 30-60 seconds</p>
+            </div>
+
+            <div class="error" id="error" style="display: none;"></div>
+
+            <div class="results" id="results">
+                <div class="model-info" id="model-info">
+                    <!-- Model performance info will go here -->
+                </div>
+
+                <div class="predictions-table">
+                    <h3 id="predictions-title">Top Predictions</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="rank">Rank</th>
+                                    <th>Player Name</th>
+                                    <th class="predicted-points">Predicted PPR Points</th>
+                                </tr>
+                            </thead>
+                            <tbody id="predictions-body">
+                                <!-- Predictions will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFeatures = [];
+
+        // Load positions on page load
+        async function loadPositions() {
+            try {
+                const response = await fetch('/api/positions');
+                const positions = await response.json();
+                
+                const select = document.getElementById('position');
+                positions.forEach(pos => {
+                    const option = document.createElement('option');
+                    option.value = pos;
+                    option.textContent = pos;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                showError('Failed to load positions');
+            }
+        }
+
+        // Load features when position changes
+        async function loadFeatures(position) {
+            if (!position) {
+                document.getElementById('features-list').innerHTML = '';
+                document.getElementById('feature-count').textContent = 'Select a position to see available features';
+                document.getElementById('run-btn').disabled = true;
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/features/${position}`);
+                const features = await response.json();
+                
+                currentFeatures = features;
+                const featuresContainer = document.getElementById('features-list');
+                featuresContainer.innerHTML = '';
+                
+                features.forEach(feature => {
+                    const div = document.createElement('div');
+                    div.className = 'feature-checkbox';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `feature-${feature}`;
+                    checkbox.value = feature;
+                    checkbox.checked = true; // Start with all selected
+                    checkbox.addEventListener('change', updateFeatureCount);
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = `feature-${feature}`;
+                    label.textContent = feature.replace(/_/g, ' ');
+                    
+                    div.appendChild(checkbox);
+                    div.appendChild(label);
+                    featuresContainer.appendChild(div);
+                });
+                
+                updateFeatureCount();
+                updateRunButton();
+                
+            } catch (error) {
+                showError('Failed to load features for ' + position);
+            }
+        }
+
+        function selectAllFeatures() {
+            const checkboxes = document.querySelectorAll('#features-list input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = true);
+            updateFeatureCount();
+            updateRunButton();
+        }
+
+        function deselectAllFeatures() {
+            const checkboxes = document.querySelectorAll('#features-list input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            updateFeatureCount();
+            updateRunButton();
+        }
+
+        function updateFeatureCount() {
+            const checkedBoxes = document.querySelectorAll('#features-list input[type="checkbox"]:checked');
+            const total = document.querySelectorAll('#features-list input[type="checkbox"]').length;
+            document.getElementById('feature-count').textContent = 
+                `${checkedBoxes.length} of ${total} features selected`;
+        }
+
+        function updateRunButton() {
+            const position = document.getElementById('position').value;
+            const checkedFeatures = document.querySelectorAll('#features-list input[type="checkbox"]:checked');
+            
+            document.getElementById('run-btn').disabled = !position || checkedFeatures.length === 0;
+        }
+
+        async function runPrediction() {
+            const position = document.getElementById('position').value;
+            const topN = parseInt(document.getElementById('top-n').value);
+            
+            const selectedFeatures = Array.from(
+                document.querySelectorAll('#features-list input[type="checkbox"]:checked')
+            ).map(cb => cb.value);
+
+            if (selectedFeatures.length === 0) {
+                showError('Please select at least one feature');
+                return;
+            }
+
+            // Show loading, hide results and errors
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('run-btn').disabled = true;
+
+            try {
+                const response = await fetch('/api/train-and-predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        position: position,
+                        features: selectedFeatures,
+                        top_n: topN
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Prediction failed');
+                }
+
+                displayResults(data);
+
+            } catch (error) {
+                showError('Prediction failed: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('run-btn').disabled = false;
+            }
+        }
+
+        function displayResults(data) {
+            // Update model info
+            const modelInfo = document.getElementById('model-info');
+            modelInfo.innerHTML = `
+                <h3>🏆 Best Model: ${data.best_model.name}</h3>
+                <div class="model-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">${data.best_model.r2_score.toFixed(3)}</div>
+                        <div class="stat-label">R² Score</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.best_model.rmse.toFixed(1)}</div>
+                        <div class="stat-label">RMSE</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.features_used.length}</div>
+                        <div class="stat-label">Features Used</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${data.total_players}</div>
+                        <div class="stat-label">Players Evaluated</div>
+                    </div>
+                </div>
+            `;
+
+            // Update predictions table
+            document.getElementById('predictions-title').textContent = 
+                `Top ${data.predictions.length} ${data.position} Predictions for 2025`;
+
+            const tbody = document.getElementById('predictions-body');
+            tbody.innerHTML = '';
+
+            data.predictions.forEach(pred => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="rank">${pred.rank}</td>
+                    <td>${pred.player_name}</td>
+                    <td class="predicted-points">${pred.predicted_points}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Event listeners
+        document.getElementById('position').addEventListener('change', (e) => {
+            loadFeatures(e.target.value);
+        });
+
+        // Initialize
+        loadPositions();
+    </script>
+</body>
+</html>

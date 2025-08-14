@@ -28,7 +28,7 @@ season_data = nfl.import_seasonal_data([2024], "REG")
 # print(season_data.head())
 season_data.info()
 
-ngs_data = nfl.import_ngs_data("rushing", [2024])
+ngs_data = nfl.import_ngs_data("passing", [2024])
 ngs_data.info()
 
 roster_data = nfl.import_seasonal_rosters([2024])
@@ -36,18 +36,18 @@ roster_data.info()
 
 wr_metrics = []
 for ix, column in enumerate(season_data.columns):
-    if (ix >= 19 and ix <= 41) or (ix >= 44 and ix <= 57):
+    if (ix >= 3 and ix <= 26) or (ix >= 44 and ix <= 57):
         wr_metrics.append(column)
 
 for ix, column in enumerate(ngs_data.columns):
-    if (ix >= 6 and ix <= 12) or (ix >= 18):
+    if (ix >= 6 and ix <= 23):
         wr_metrics.append(column)
 
 for ix, column in enumerate(roster_data.columns):
     if (ix == 36 or ix == 35 or ix == 10 or ix == 11 or ix == 22):
         wr_metrics.append(column)
 
-with open("data/metrics/RB_metrics.json", "w") as f:
+with open("data/metrics/QB_metrics_all.json", "w") as f:
     json.dump(wr_metrics, f, indent=2)
 
 print("Finished")

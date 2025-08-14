@@ -1,0 +1,32 @@
+{
+  "feature_columns": [
+    "completions",
+    "attempts",
+    "passing_yards",
+    "passing_tds",
+    "interceptions",
+    "sacks",
+    "sack_yards",
+    "sack_fumbles",
+    "passing_air_yards",
+    "passing_yards_after_catch",
+    "passing_first_downs",
+    "passing_epa",
+    "pacr",
+    "dakota",
+    "carries",
+    "rushing_yards",
+    "rushing_tds",
+    "rushing_fumbles",
+    "rushing_first_downs",
+    "fantasy_points_ppr",
+    "games",
+    "ppr_sh"
+  ],
+  "model_performance": {
+    "R2": 0.3446880889897659,
+    "RMSE": 97.31674206038778
+  },
+  "training_samples": 387,
+  "nan_handling": "fill_nan_with_median"
+}

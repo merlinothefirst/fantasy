@@ -21,8 +21,8 @@
     "ppr_sh"
   ],
   "model_performance": {
-    "R2": 0.26247858853097483,
-    "RMSE": 73.35417499711718
+    "R2": 0.2624785885309676,
+    "RMSE": 73.35417499711755
   },
   "training_samples": 763,
   "nan_handling": "fill_nan_with_median"
