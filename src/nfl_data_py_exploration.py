@@ -28,29 +28,29 @@ season_data = nfl.import_seasonal_data([2024], "REG")
 # print(season_data.head())
 season_data.info()
 
-ngs_data = nfl.import_ngs_data("receiving", [2024])
+ngs_data = nfl.import_ngs_data("rushing", [2024])
 ngs_data.info()
 
 roster_data = nfl.import_seasonal_rosters([2024])
 roster_data.info()
 
-# wr_metrics = []
-# for ix, column in enumerate(season_data.columns):
-#     if (ix >= 19 and ix <= 41) or (ix >= 45 and ix <= 57):
-#         wr_metrics.append(column)
+wr_metrics = []
+for ix, column in enumerate(season_data.columns):
+    if (ix >= 19 and ix <= 41) or (ix >= 44 and ix <= 57):
+        wr_metrics.append(column)
 
-# for ix, column in enumerate(ngs_data.columns):
-#     if (ix >= 6 and ix <= 17):
-#         wr_metrics.append(column)
+for ix, column in enumerate(ngs_data.columns):
+    if (ix >= 6 and ix <= 12) or (ix >= 18):
+        wr_metrics.append(column)
 
-# for ix, column in enumerate(roster_data.columns):
-#     if (ix == 36 or ix == 35 or ix == 10 or ix == 11 or ix == 22):
-#         wr_metrics.append(column)
+for ix, column in enumerate(roster_data.columns):
+    if (ix == 36 or ix == 35 or ix == 10 or ix == 11 or ix == 22):
+        wr_metrics.append(column)
 
-# with open("data/quarter_decade/WR_metrics.json", "w") as f:
-#     json.dump(wr_metrics, f, indent=2)
+with open("data/metrics/RB_metrics.json", "w") as f:
+    json.dump(wr_metrics, f, indent=2)
 
-# print("Finished")
+print("Finished")
 
 # weekly_data = nfl.import_weekly_data([2024])
 # print("Available methods on weekly_data DataFrame:")

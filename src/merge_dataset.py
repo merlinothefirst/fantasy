@@ -30,7 +30,7 @@ def merge_datasets(position, season_range: tuple=(2016, 2024)):
     ]
 
     # filter to desired metrics/features
-    with open(f"data/quarter_decade/{position}_metrics.json", "r") as f:
+    with open(f"data/metrics/{position}_metrics.json", "r") as f:
         desired_features = json.load(f)
 
     extra_columns = [

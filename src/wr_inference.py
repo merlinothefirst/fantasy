@@ -5,31 +5,33 @@ from sklearn.exceptions import DataConversionWarning
 import json
 
 
-MODEL = "lasso"
-POSITION = "WR"
+MODEL = "ridge"
+POSITION = "RB"
 TOP_N = 50
 
 warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
 
 
+pos = POSITION.lower()
+
 # load model and features
 print("Loading trained model...")
-model = joblib.load(f"models/{MODEL}_wr_model_weights.pkl")
+model = joblib.load(f"models/{MODEL}_{pos}_model_weights.pkl")
 
 # with open(f"models/{MODEL}_wr_model_stats.json", "r") as f:
 #     model_info = json.load(f)
 # feature_columns = model_info["feature_columns"]
-with open("data/quarter_decade/WR_metrics.json", "r") as f:
+with open(f"data/metrics/{POSITION}_metrics.json", "r") as f:
     desired_metrics = json.load(f)
 feature_columns = desired_metrics
 
 # load data
-data = pd.read_csv("data/filtered/comprehensive_WR_data.csv")
+data = pd.read_csv(f"data/filtered/comprehensive_{POSITION}_data.csv")
 
 # create 2024 season totals (input features)
 last_season_totals = data[data["season"] == 2024].copy()
 last_season_totals = last_season_totals.drop_duplicates(subset="player_name", keep="first")
-print(f"Found {len(last_season_totals)} WRs with 2024 data")
+print(f"Found {len(last_season_totals)} {POSITION}s with 2024 data")
 
 # prepare features for prediction
 prediction_feautures = last_season_totals[feature_columns].fillna(last_season_totals[feature_columns].median())
@@ -48,7 +50,7 @@ results = pd.DataFrame({
 top_predictions = results.sort_values("predicted_2025_points", ascending=False).head(TOP_N)
 
 print()
-print("WR rank:  Player:             Predicted PPR points:")
+print(f"{POSITION} rank:  Player:             Predicted PPR points:")
 print("-----------------------------------------")
 count = 1
 for _, row in top_predictions.iterrows():

@@ -1,0 +1,29 @@
+{
+  "feature_columns": [
+    "carries",
+    "rushing_yards",
+    "rushing_tds",
+    "rushing_first_downs",
+    "receptions",
+    "targets",
+    "receiving_yards",
+    "receiving_yards_after_catch",
+    "receiving_first_downs",
+    "target_share",
+    "air_yards_share",
+    "wopr_x",
+    "fantasy_points_ppr",
+    "tgt_sh",
+    "yac_sh",
+    "wopr_y",
+    "ry_sh",
+    "yptmpa",
+    "ppr_sh"
+  ],
+  "model_performance": {
+    "R2": 0.3553116329454077,
+    "RMSE": 68.58236184837459
+  },
+  "training_samples": 763,
+  "nan_handling": "fill_nan_with_median"
+}

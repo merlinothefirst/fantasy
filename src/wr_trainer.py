@@ -74,7 +74,7 @@ def run_training(position: str):
     print(prediction_pairs_df.shape)
 
     # next we need to convert this into the appropriate X matrix and y vector for learning
-    with open(f"data/quarter_decade/{position}_metrics.json", "r") as f:
+    with open(f"data/metrics/{position}_metrics.json", "r") as f:
         desired_metrics = json.load(f)
 
     X = prediction_pairs_df[desired_metrics]
@@ -165,7 +165,7 @@ def run_training(position: str):
 
 
 if __name__ == "__main__":
-    POS = "WR"
+    POS = "RB"
 
     merge_datasets(POS)
 
