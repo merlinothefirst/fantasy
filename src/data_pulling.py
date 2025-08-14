@@ -1,5 +1,15 @@
 import nfl_data_py as nfl
 import json
+import pandas as pd
+
+
+NGS_AGGREGATION_STRATEGY = {
+    "sum": [],
+    "average": ["avg_cushion", "avg_separation", "avg_intended_air_yards", "catch_percentage", 
+                "avg_yac", "avg_expected_yac", "avg_yac_above_expectation", "avg_time_to_los", 
+                "avg_rush_yards", "efficiency", "avg_time_to_throw", "avg_completed_air_yards"],
+    "keep": ["season", "player_display_name", "player_position", "player_gsis_id"]
+}
 
 
 # weekly data (old)
@@ -54,8 +64,14 @@ def pull_data(seasons=list(range(2000, 2025)), positions=["WR", "RB", "TE", "QB"
 
     # next-gen stats data
     ngs_data_receiving = nfl.import_ngs_data("receiving", seasons)
+    ngs_data_receiving = aggregate_ngs_by_season(ngs_data_receiving)
+
     ngs_data_rushing = nfl.import_ngs_data("rushing", seasons)
+    ngs_data_rushing = aggregate_ngs_by_season(ngs_data_rushing)
+
     ngs_data_passing = nfl.import_ngs_data("passing", seasons)
+    ngs_data_passing = aggregate_ngs_by_season(ngs_data_passing)
+
     for position in positions:
         relevant_data = None
 
@@ -82,6 +98,35 @@ def pull_data(seasons=list(range(2000, 2025)), positions=["WR", "RB", "TE", "QB"
             cleaned_relevant_data.to_csv(filename, index=False)
 
         print(f"{position} next-gen stats data saved")
+
+
+def aggregate_ngs_by_season(ngs_dataframe, strategy_dict=NGS_AGGREGATION_STRATEGY):
+    grouped = ngs_dataframe.groupby(['player_gsis_id', 'season'])
+
+    aggregated_rows = []
+    for (player_id, season), group_data in grouped:
+        new_row = {}
+
+        # "keep" columns
+        for col in strategy_dict["keep"]:
+            if col in group_data.columns:
+                new_row[col] = group_data[col].iloc[0]
+        
+        # "sum" columns
+        for col in strategy_dict["sum"]:
+            if col in group_data.columns:
+                new_row[col] = group_data[col].sum()
+
+        # "average" columns
+        for col in strategy_dict["average"]:
+            if col in group_data.columns:
+                new_row[col] = group_data[col].mean()
+
+        new_row["total_weeks"] = len(group_data)
+
+        aggregated_rows.append(new_row)
+
+    return pd.DataFrame(aggregated_rows)
 
 
 if __name__ == "__main__":
