@@ -5,7 +5,7 @@ from sklearn.exceptions import DataConversionWarning
 import json
 
 
-MODEL = "linear_regression"
+MODEL = "lasso"
 POSITION = "WR"
 TOP_N = 50
 
@@ -50,8 +50,10 @@ top_predictions = results.sort_values("predicted_2025_points", ascending=False).
 print()
 print("WR rank:  Player:             Predicted PPR points:")
 print("-----------------------------------------")
-for ix, row in top_predictions.iterrows():
-    print(f"{str(ix+1):10}{row['player_name']:35}{row['predicted_2025_points']:.2f}")
+count = 1
+for _, row in top_predictions.iterrows():
+    print(f"{str(count):10}{row['player_name']:35}{row['predicted_2025_points']:.2f}")
+    count += 1
 
 print()
 print("Checking feature alignment...")

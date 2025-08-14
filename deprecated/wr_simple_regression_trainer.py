@@ -79,6 +79,7 @@ print(f"Created {len(prediction_df)} prediction pairs")
 prediction_df_clean = prediction_df.dropna()
 
 print(prediction_df_clean.head(10))
+print(prediction_df_clean.shape)
 
 # step 4: create X matrix and y vector
 feature_columns = [

@@ -4,17 +4,26 @@
     "targets",
     "receiving_yards",
     "receiving_tds",
+    "receiving_air_yards",
     "receiving_yards_after_catch",
     "receiving_first_downs",
     "target_share",
     "air_yards_share",
     "wopr_x",
-    "fantasy_points_ppr"
+    "fantasy_points_ppr",
+    "wopr_y",
+    "ry_sh",
+    "rfd_sh",
+    "rtdfd_sh",
+    "w8dom",
+    "yptmpa",
+    "ppr_sh",
+    "tgt_sh"
   ],
   "model_performance": {
-    "R2": 0.4495162800283464,
-    "RMSE": 65.26864365696999
+    "R2": 0.5182215552009357,
+    "RMSE": 57.179305985583966
   },
-  "training_samples": 2812,
+  "training_samples": 1045,
   "nan_handling": "fill_nan_with_median"
 }
