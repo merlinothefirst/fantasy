@@ -161,7 +161,7 @@ def run_training(position: str):
 
 
 if __name__ == "__main__":
-    POS = "WR"
+    POS = "RB"
 
     merge_datasets(POS)
 

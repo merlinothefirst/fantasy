@@ -5,16 +5,16 @@ import json
 def merge_datasets(position, season_range: tuple=(2016, 2024), for_app=False):
     # load datasets
     seasonal_data = pd.read_csv(f"data/quarter_decade/{position}_seasonal_data.csv")
-    # ngs_data = pd.read_csv(f"data/quarter_decade/{position}_ngs_data.csv")
+    ngs_data = pd.read_csv(f"data/quarter_decade/{position}_ngs_data.csv")
     roster_data = pd.read_csv(f"data/quarter_decade/{position}_roster_data.csv")
 
     print("Dataset sizes:")
     print(f"Seasonal: {seasonal_data.shape}")
-    # print(f"NGS: {ngs_data.shape}")
+    print(f"NGS: {ngs_data.shape}")
     print(f"Roster: {roster_data.shape}")
 
     # standardize player_gsis_id to player_id
-    # ngs_data = ngs_data.rename(columns={"player_gsis_id": "player_id"})
+    ngs_data = ngs_data.rename(columns={"player_gsis_id": "player_id"})
 
     # merge the datasets
     comprehensive_data = seasonal_data.merge(
@@ -22,6 +22,23 @@ def merge_datasets(position, season_range: tuple=(2016, 2024), for_app=False):
         on=["player_id", "season"],
         how="inner"
     )
+    # .merge(
+    #     ngs_data,
+    #     on=["player_id", "season"],
+    #     how="left"
+    # )
+
+    # print("Before NGS merge:")
+    # print(f"Unique players: {seasonal_data.merge(roster_data, on=['player_id', 'season'], how='inner')['player_id'].nunique()}")
+    # print(f"Seasons covered: {seasonal_data.merge(roster_data, on=['player_id', 'season'], how='inner')['season'].unique()}")
+
+    # print("\nAfter NGS merge:")
+    # print(f"Unique players: {comprehensive_data['player_id'].nunique()}")
+    # print(f"Seasons covered: {comprehensive_data['season'].unique()}")
+
+    # # Check which seasons have NGS data
+    # print(f"\nNGS data seasons: {ngs_data['season'].unique()}")
+    # print(f"NGS data player count by season: {ngs_data.groupby('season')['player_id'].nunique()}")
 
     # optionally filter by seasons
     comprehensive_data = comprehensive_data[

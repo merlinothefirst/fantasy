@@ -10,7 +10,6 @@
     "receiving_yards_after_catch",
     "receiving_first_downs",
     "target_share",
-    "air_yards_share",
     "wopr_x",
     "fantasy_points_ppr",
     "tgt_sh",
@@ -21,8 +20,8 @@
     "ppr_sh"
   ],
   "model_performance": {
-    "R2": 0.3247667085589917,
-    "RMSE": 70.18825474582867
+    "R2": 0.3353791005720329,
+    "RMSE": 69.63450894871289
   },
   "training_samples": 763,
   "nan_handling": "fill_nan_with_median"
