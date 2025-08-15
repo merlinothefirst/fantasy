@@ -16,10 +16,10 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from src.merge_dataset import merge_datasets
+from src.merge_dataset import merge_datasets, get_next_year_team_stats
 
 
-def run_training(position: str):
+def run_training(position: str, include_team_stats=False):
     pos = position.lower()
     print(f"-------------------- {position}s --------------------")
 
@@ -44,9 +44,26 @@ def run_training(position: str):
             current_szn = current_row["season"]
             next_szn = next_row["season"]
 
+            # ADD TEAM STATS LOGIC
+            next_szn_team_stats = None
+            if include_team_stats:
+                next_team = next_row["team"]
+                next_szn_team_stats = get_next_year_team_stats(next_szn, next_team)
+                # print(next_szn_team_stats)
+            # if len(next_szn_team_stats) != 1:
+            #     print(next_szn_team_stats)
+            #     print(next_szn)
+            #     print(next_row)
+            #     print(next_team)
+            #     raise AssertionError
+
             if next_szn == current_szn + 1:
                 # X vector for given pair:
-                features = current_row.drop(["player_id", "player_name", "season"])
+                features = current_row.drop(["player_id", "player_name", "season", "team"])
+
+                # cocnatenate team stats if available
+                if next_szn_team_stats is not None:
+                    features = pd.concat([features, next_szn_team_stats.iloc[0]])
 
                 # y value for give pair:
                 target = next_row["fantasy_points_ppr"]
@@ -76,6 +93,12 @@ def run_training(position: str):
     # next we need to convert this into the appropriate X matrix and y vector for learning
     with open(f"data/metrics/{position}_metrics.json", "r") as f:
         desired_metrics = json.load(f)
+
+    with open("data/metrics/team_metrics.json", "r") as f:
+        team_metrics = json.load(f)
+
+    desired_metrics.extend(team_metrics)
+    print(desired_metrics)
 
     X = prediction_pairs_df[desired_metrics]
     y = prediction_pairs_df["target"]
@@ -165,4 +188,4 @@ if __name__ == "__main__":
 
     merge_datasets(POS)
 
-    run_training(POS)
+    run_training(POS, include_team_stats=True)

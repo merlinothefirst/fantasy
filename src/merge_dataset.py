@@ -41,9 +41,47 @@ TEAM_NAME_TO_ABBREV = {
     "Washington Redskins": "WAS"
 }
 
+TEAM_ABBREV_TO_NAME = {
+    "ARI": "Arizona Cardinals",
+    "ATL": "Atlanta Falcons", 
+    "BAL": "Baltimore Ravens",
+    "BUF": "Buffalo Bills",
+    "CAR": "Carolina Panthers",
+    "CHI": "Chicago Bears",
+    "CIN": "Cincinnati Bengals",
+    "CLE": "Cleveland Browns",
+    "DAL": "Dallas Cowboys",
+    "DEN": "Denver Broncos",
+    "DET": "Detroit Lions",
+    "GB": "Green Bay Packers",
+    "HOU": "Houston Texans",
+    "IND": "Indianapolis Colts",
+    "JAX": "Jacksonville Jaguars",
+    "KC": "Kansas City Chiefs",
+    "LV": "Las Vegas Raiders",
+    "OAK": "Oakland Raiders",      # pre-2020, maps to same as LV
+    "LAC": "Los Angeles Chargers",
+    "LA": "Los Angeles Rams",
+    "SD": "San Diego Chargers",    # pre-2017, maps to same as LAC
+    "LAR": "Los Angeles Rams",
+    "MIA": "Miami Dolphins",
+    "MIN": "Minnesota Vikings",
+    "NE": "New England Patriots",
+    "NO": "New Orleans Saints",
+    "NYG": "New York Giants",
+    "NYJ": "New York Jets",
+    "PHI": "Philadelphia Eagles",
+    "PIT": "Pittsburgh Steelers",
+    "SF": "San Francisco 49ers",
+    "SEA": "Seattle Seahawks",
+    "TB": "Tampa Bay Buccaneers",
+    "TEN": "Tennessee Titans",
+    "WAS": "Washington Redskins"   # All Washington variants map to current name
+}
 
 
-def merge_datasets(position, season_range: tuple=(2016, 2024), for_app=False):
+
+def merge_datasets(position, season_range: tuple=(2016, 2023), for_app=False):
     # load datasets
     seasonal_data = pd.read_csv(f"data/quarter_decade/{position}_seasonal_data.csv")
     ngs_data = pd.read_csv(f"data/quarter_decade/{position}_ngs_data.csv")
@@ -64,17 +102,29 @@ def merge_datasets(position, season_range: tuple=(2016, 2024), for_app=False):
         how="inner"
     )
 
+    # comprehensive_data.to_csv("temp.csv")
+
     # TESTING TEAM STATS FOR THE NEXT YEAR'S TEAM FROM LAST YEAR'S STATS
+    # current player (2024) --> their team next year (2025) --> that team's (2024) stats
+    # ^ gets added to the current players features as next_year_team_[]
 
     # merge in team stats
     # team_stats = pd.read_csv("data/team_stats/team_stats_2003_2023.csv")
     # team_stats = team_stats.rename(columns={"year": "season"})
     # team_stats["team"] = team_stats["team"].map(TEAM_NAME_TO_ABBREV)
-    # comprehensive_data = comprehensive_data.merge(
+
+    # all_teams = {}
+    # for index, row in comprehensive_data.iterrows():
+    #     player_id = row["player_id"]
+    #     current_team = 
+
+
+    # testing = comprehensive_data.merge(
     #     team_stats,
     #     on=["team", "season"],
     #     how="inner"
     # )
+    # testing.to_csv("temp_after.csv")
 
     # .merge(
     #     ngs_data,
@@ -116,6 +166,39 @@ def merge_datasets(position, season_range: tuple=(2016, 2024), for_app=False):
     # save the new filtered dataset
     filtered_data.to_csv(f"data/filtered/comprehensive_{position}_data.csv", index=False)
     print("Dataset saved")
+
+
+def get_next_year_team_stats(next_year, team_abbrev):
+    # map to full name
+    prev_year = next_year - 1
+    if team_abbrev == "WAS" and prev_year >= 2020:
+        if prev_year >= 2022:
+            team_full = "Washington Commanders"
+        else:
+            team_full = "Washington Football Team"
+    elif team_abbrev == "LV" and prev_year == 2019:
+        team_full = "Oakland Raiders"
+    elif team_abbrev == "LAC" and prev_year == 2016:
+        team_full = "San Diego Chargers"
+    else:
+        team_full = TEAM_ABBREV_TO_NAME[team_abbrev]
+
+    # load team stats in and adjust
+    team_stats = pd.read_csv("data/team_stats/team_stats_2003_2023.csv")
+    # team_stats = team_stats.rename(columns={"year": "season"})
+    # team_stats["team"] = team_stats["team"].map(TEAM_NAME_TO_ABBREV)
+
+    # narrow down to desired year and team
+    team_stats = team_stats[team_stats["year"] == prev_year]
+    team_stats = team_stats[team_stats["team"] == team_full]
+
+    # filter to specified stats (we'll store this in a separate .json?)
+    with open("data/metrics/team_metrics.json", "r") as f:
+        columns_to_keep = json.load(f)
+
+    filtered_team_stats = team_stats[columns_to_keep]
+
+    return filtered_team_stats
 
 
 if __name__ == "__main__":

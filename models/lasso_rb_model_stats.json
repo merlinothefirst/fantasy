@@ -18,15 +18,37 @@
     "ry_sh",
     "yptmpa",
     "ppr_sh",
+    "wins",
+    "losses",
+    "win_loss_perc",
+    "points",
+    "points_opp",
+    "points_diff",
+    "total_yards",
+    "plays_offense",
+    "yds_per_play_offense",
+    "turnovers",
+    "first_down",
+    "pass_cmp",
+    "pass_att",
+    "pass_yds",
+    "pass_td",
+    "pass_int",
+    "pass_net_yds_per_att",
+    "pass_fd",
     "rush_att",
     "rush_yds",
     "rush_yds_per_att",
-    "rush_fd"
+    "rush_fd",
+    "penalties",
+    "pen_fd",
+    "score_pct",
+    "exp_pts_tot"
   ],
   "model_performance": {
-    "R2": 0.42740418810263825,
-    "RMSE": 60.21427730992481
+    "R2": 0.42333605663018903,
+    "RMSE": 63.20248692716811
   },
-  "training_samples": 654,
+  "training_samples": 677,
   "nan_handling": "fill_nan_with_median"
 }

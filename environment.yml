@@ -13,6 +13,7 @@ dependencies:
   - xgboost
   - flask
   - flask-cors
+  - kagglehub
   - pip
   - pip:
     - nfl_data_py
