@@ -21,9 +21,9 @@
     "tgt_sh"
   ],
   "model_performance": {
-    "R2": 0.4192619492237998,
-    "RMSE": 62.77769104868882
+    "R2": 0.4821855774931397,
+    "RMSE": 63.02286723719401
   },
-  "training_samples": 1045,
+  "training_samples": 876,
   "nan_handling": "fill_nan_with_median"
 }

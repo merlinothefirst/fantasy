@@ -17,12 +17,16 @@
     "wopr_y",
     "ry_sh",
     "yptmpa",
-    "ppr_sh"
+    "ppr_sh",
+    "rush_att",
+    "rush_yds",
+    "rush_yds_per_att",
+    "rush_fd"
   ],
   "model_performance": {
-    "R2": 0.3353791005720329,
-    "RMSE": 69.63450894871289
+    "R2": 0.40837048611823745,
+    "RMSE": 61.20688960956172
   },
-  "training_samples": 763,
+  "training_samples": 654,
   "nan_handling": "fill_nan_with_median"
 }

@@ -2,6 +2,47 @@ import pandas as pd
 import json
 
 
+TEAM_NAME_TO_ABBREV = {
+    "Arizona Cardinals": "ARI",
+    "Atlanta Falcons": "ATL",
+    "Baltimore Ravens": "BAL",
+    "Buffalo Bills": "BUF",
+    "Carolina Panthers": "CAR",
+    "Chicago Bears": "CHI",
+    "Cincinnati Bengals": "CIN",
+    "Cleveland Browns": "CLE",
+    "Dallas Cowboys": "DAL",
+    "Denver Broncos": "DEN",
+    "Detroit Lions": "DET",
+    "Green Bay Packers": "GB",
+    "Houston Texans": "HOU",
+    "Indianapolis Colts": "IND",
+    "Jacksonville Jaguars": "JAX",
+    "Kansas City Chiefs": "KC",
+    "Las Vegas Raiders": "LV",       # formerly OAK
+    "Oakland Raiders": "OAK",        # pre-2020
+    "Los Angeles Chargers": "LAC",   # formerly SD
+    "San Diego Chargers": "SD",      # pre-2017
+    "Los Angeles Rams": "LAR",
+    "Miami Dolphins": "MIA",
+    "Minnesota Vikings": "MIN",
+    "New England Patriots": "NE",
+    "New Orleans Saints": "NO",
+    "New York Giants": "NYG",
+    "New York Jets": "NYJ",
+    "Philadelphia Eagles": "PHI",
+    "Pittsburgh Steelers": "PIT",
+    "San Francisco 49ers": "SF",
+    "Seattle Seahawks": "SEA",
+    "Tampa Bay Buccaneers": "TB",
+    "Tennessee Titans": "TEN",
+    "Washington Commanders": "WAS",  # formerly Football Team / Redskins
+    "Washington Football Team": "WAS",
+    "Washington Redskins": "WAS"
+}
+
+
+
 def merge_datasets(position, season_range: tuple=(2016, 2024), for_app=False):
     # load datasets
     seasonal_data = pd.read_csv(f"data/quarter_decade/{position}_seasonal_data.csv")
@@ -22,23 +63,24 @@ def merge_datasets(position, season_range: tuple=(2016, 2024), for_app=False):
         on=["player_id", "season"],
         how="inner"
     )
+
+    # TESTING TEAM STATS FOR THE NEXT YEAR'S TEAM FROM LAST YEAR'S STATS
+
+    # merge in team stats
+    # team_stats = pd.read_csv("data/team_stats/team_stats_2003_2023.csv")
+    # team_stats = team_stats.rename(columns={"year": "season"})
+    # team_stats["team"] = team_stats["team"].map(TEAM_NAME_TO_ABBREV)
+    # comprehensive_data = comprehensive_data.merge(
+    #     team_stats,
+    #     on=["team", "season"],
+    #     how="inner"
+    # )
+
     # .merge(
     #     ngs_data,
     #     on=["player_id", "season"],
     #     how="left"
     # )
-
-    # print("Before NGS merge:")
-    # print(f"Unique players: {seasonal_data.merge(roster_data, on=['player_id', 'season'], how='inner')['player_id'].nunique()}")
-    # print(f"Seasons covered: {seasonal_data.merge(roster_data, on=['player_id', 'season'], how='inner')['season'].unique()}")
-
-    # print("\nAfter NGS merge:")
-    # print(f"Unique players: {comprehensive_data['player_id'].nunique()}")
-    # print(f"Seasons covered: {comprehensive_data['season'].unique()}")
-
-    # # Check which seasons have NGS data
-    # print(f"\nNGS data seasons: {ngs_data['season'].unique()}")
-    # print(f"NGS data player count by season: {ngs_data.groupby('season')['player_id'].nunique()}")
 
     # optionally filter by seasons
     comprehensive_data = comprehensive_data[
@@ -58,7 +100,8 @@ def merge_datasets(position, season_range: tuple=(2016, 2024), for_app=False):
     extra_columns = [
         "player_id",
         "player_name",
-        "season"
+        "season",
+        "team"
     ]
 
     columns_to_keep = desired_features + extra_columns
@@ -76,4 +119,4 @@ def merge_datasets(position, season_range: tuple=(2016, 2024), for_app=False):
 
 
 if __name__ == "__main__":
-    merge_datasets("WR")
+    merge_datasets("RB")

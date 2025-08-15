@@ -22,35 +22,42 @@ print(fns)
 # print(player_data.head())
 # player_data.info()
 
-season_data = nfl.import_seasonal_data([2024], "REG")
+season_data = nfl.import_weekly_data([2024])
 # methods = [method for method in dir(season_data) if not method.startswith("_")]
 
 # print(season_data.head())
 season_data.info()
 
-ngs_data = nfl.import_ngs_data("passing", [2024])
-ngs_data.info()
+import kagglehub
 
-roster_data = nfl.import_seasonal_rosters([2024])
-roster_data.info()
+# Download latest version
+path = kagglehub.dataset_download("cviaxmiwnptr/nfl-team-stats-20022019-espn")
 
-wr_metrics = []
-for ix, column in enumerate(season_data.columns):
-    if (ix >= 3 and ix <= 26) or (ix >= 44 and ix <= 57):
-        wr_metrics.append(column)
+print("Path to dataset files:", path)
 
-for ix, column in enumerate(ngs_data.columns):
-    if (ix >= 6 and ix <= 23):
-        wr_metrics.append(column)
+# ngs_data = nfl.import_ngs_data("passing", [2024])
+# ngs_data.info()
 
-for ix, column in enumerate(roster_data.columns):
-    if (ix == 36 or ix == 35 or ix == 10 or ix == 11 or ix == 22):
-        wr_metrics.append(column)
+# roster_data = nfl.import_seasonal_rosters([2024])
+# roster_data.info()
 
-with open("data/metrics/QB_metrics_all.json", "w") as f:
-    json.dump(wr_metrics, f, indent=2)
+# wr_metrics = []
+# for ix, column in enumerate(season_data.columns):
+#     if (ix >= 3 and ix <= 26) or (ix >= 44 and ix <= 57):
+#         wr_metrics.append(column)
 
-print("Finished")
+# for ix, column in enumerate(ngs_data.columns):
+#     if (ix >= 6 and ix <= 23):
+#         wr_metrics.append(column)
+
+# for ix, column in enumerate(roster_data.columns):
+#     if (ix == 36 or ix == 35 or ix == 10 or ix == 11 or ix == 22):
+#         wr_metrics.append(column)
+
+# with open("data/metrics/QB_metrics_all.json", "w") as f:
+#     json.dump(wr_metrics, f, indent=2)
+
+# print("Finished")
 
 # weekly_data = nfl.import_weekly_data([2024])
 # print("Available methods on weekly_data DataFrame:")
